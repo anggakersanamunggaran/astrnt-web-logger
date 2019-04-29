@@ -1,39 +1,15 @@
 import httpHandler from 'utils/astrnt-http-handler'
 import { deviceInfo } from 'utils/navigator-helper'
+import * as DateUtils from 'utils/date-utils'
 
 const logEnv = 'ASTRNT_LOG_ENV'
 const logBaseInfo = 'ASTRNT_BASE_LOG_INFO'
+const logInfos = 'ASTRNT_LOG_INFOS'
 const storageKeys = [
   logEnv,
-  logBaseInfo
+  logBaseInfo,
+  logInfos
 ]
-
-const getCurrentDateTime = () => {
-  const date = new Date()
-  let d = new Date(date),
-    month = '' + (d.getMonth() + 1),
-    day = '' + d.getDate(),
-    year = d.getFullYear(),
-    hour = d.getHours(),
-    minute = d.getMinutes(),
-    second = d.getSeconds()
-
-  if (month.length < 2) {
-    month = '0' + month
-  }
-
-  if (day.length < 2) {
-    day = '0' + day
-  }
-
-  hour = hour % 12;
-  hour = hour ? hour : 12;
-  minute = minute < 10 ? '0' + minute : minute;
-
-  const result = `${[year, month, day].join('-')} ${hour}:${minute}:${second}`
-
-  return result;
-}
 
 const getEnv = () => {
   const env = localStorage.getItem(logEnv)
@@ -64,8 +40,8 @@ const constructURL = () => {
 
 const constructInterviewInfo = (params) => {
   const device = deviceInfo()
-  const timeZone = new Date().getTimezoneOffset()
-  const logTime = getCurrentDateTime()
+  const timeZone = DateUtils.getTimezone()
+  const logTime = DateUtils.getCurrentDateTime()
   const ua = navigator.userAgent
   const os = `${device.os} (${device.osVersion})`
   const version = `${device.browser}, Version ${device.browserVersion} (${device.browserMajorVersion})`
@@ -82,7 +58,36 @@ const constructInterviewInfo = (params) => {
   return recordedParam
 }
 
-export function initialize(env, params) {
+const sendEvent = (params) => {
+  const URL = constructURL()
+  const logInfo = constructInterviewInfo(params)
+  const requestParams = {
+    logs: [ logInfo ]
+  }
+
+  return httpHandler('POST', URL, requestParams)
+}
+
+const storeEvent = (params) => {
+  const logItems = localStorage.getItem(logInfos)
+
+  let storedLogs
+  if (!logItems) {
+    storedLogs = []
+  } else {
+    storedLogs = JSON.parse(logItems)
+    localStorage.removeItem(logInfos)
+  }
+
+  const interviewInfo = constructInterviewInfo(params)
+  storedLogs.push(interviewInfo)
+
+  localStorage.setItem(JSON.stringify(storedLogs))
+
+  return Promise.resolve(interviewInfo)
+}
+
+export function initialize(env, params, onError = () => {}, onUnhandledRejection = () => {}) {
   const baseParam = {
     'interviewCode': params.interview_code || '',
     'candidate_id': params.candidate_id || 0,
@@ -92,13 +97,38 @@ export function initialize(env, params) {
 
   localStorage.setItem(logEnv, env)
   localStorage.setItem(logBaseInfo, JSON.stringify(baseParam))
+
+  window.addEventListener('error', (errEvt) => {
+    onError(errEvt.error)
+    return false
+  })
+
+  window.addEventListener('unhandledrejection', (errEvt) => {
+    onUnhandledRejection(errEvt.reason)
+  })
 }
 
 export function recordEvent(params) {
+  switch (params.status) {
+    case 'online':
+      return sendEvent(params)
+
+    case 'offline':
+      return storeEvent(params)
+  }
+
+  return Promise.resolve('No event to send')
+}
+
+export function sendSavedEvents() {
+  const logItems = localStorage.getItem(logInfos)
+  if (!logItems) {
+    return Promise.resolve()
+  }
+
   const URL = constructURL()
-  const interviewInfo = constructInterviewInfo(params)
   const requestParams = {
-    logs: [ interviewInfo ]
+    logs: JSON.parse(logItems)
   }
 
   return httpHandler('POST', URL, requestParams)
