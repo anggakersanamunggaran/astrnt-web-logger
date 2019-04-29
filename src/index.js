@@ -82,7 +82,7 @@ const storeEvent = (params) => {
   const interviewInfo = constructInterviewInfo(params)
   storedLogs.push(interviewInfo)
 
-  localStorage.setItem(JSON.stringify(storedLogs))
+  localStorage.setItem(logInfos, JSON.stringify(storedLogs))
 
   return Promise.resolve(interviewInfo)
 }
@@ -131,7 +131,14 @@ export function sendSavedEvents() {
     logs: JSON.parse(logItems)
   }
 
-  return httpHandler('POST', URL, requestParams)
+  return new Promise((resolve, reject) => {
+    httpHandler('POST', URL, requestParams)
+      .then(result => {
+        localStorage.removeItem(logInfos)
+        resolve(result)
+      })
+      .catch(error => reject(error))
+  })
 }
 
 export function clearCache() {

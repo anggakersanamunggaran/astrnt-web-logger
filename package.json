@@ -1,6 +1,6 @@
 {
   "name": "astrnt-web-logger",
-  "version": "0.0.8",
+  "version": "0.0.85",
   "description": "Simple web event tracker for astronaut web application",
   "main": "dist/astrnt-web-logger.min.js",
   "scripts": {
