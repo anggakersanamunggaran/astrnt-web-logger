@@ -24,8 +24,8 @@ export const getCurrentDateTime = () => {
     day = '0' + day
   }
 
-  hour = hour % 12;
-  hour = hour ? hour : 12;
+  // hour = hour % 12;
+  // hour = hour ? hour : 12;
   minute = minute < 10 ? '0' + minute : minute;
 
   const result = `${[year, month, day].join('-')} ${hour}:${minute}:${second}`
