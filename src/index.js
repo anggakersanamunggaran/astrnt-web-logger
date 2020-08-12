@@ -25,6 +25,7 @@ const constructURL = () => {
   const env = getEnv()
   let domainPrefix = ''
   let baseURL
+  console.log(env)
   switch (env) {
     case 'beta': case 'dev':
       domainPrefix = 'beta'
