@@ -24,7 +24,8 @@ const getBaseInfo = () => {
 const constructURL = () => {
   const env = getEnv()
   let domainPrefix
-  let baseURL
+  var baseURL = env
+  console.log(env)
   switch (env) {
     case 'beta': case 'dev':
       domainPrefix = 'beta'
@@ -32,8 +33,6 @@ const constructURL = () => {
     case 'production': case 'live':
       domainPrefix = 'app'
       break
-    default:
-      baseURL = env
   }
   if (domainPrefix) {
     baseURL = `https://${domainPrefix}.astrnt.co`
