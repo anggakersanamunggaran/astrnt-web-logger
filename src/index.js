@@ -31,7 +31,7 @@ const constructURL = () => {
       domainPrefix = 'log-beta'
       break
     case 'production': case 'live':
-      domainPrefix = 'app'
+      domainPrefix = 'log-app'
       break
   }
   if (domainPrefix) {
