@@ -77,35 +77,43 @@ const getBrowserInfo = () => {
   let majorVersion = parseInt(nVer, 10)
   let browser = navigator.appName
   let version = '' + parseFloat(navigator.appVersion)
-  let nameOffset, verOffset, ix
+  let nameOffset, verOffset, offSet
 
   if ((verOffset = ua.indexOf('Opera')) !== -1) {
     browser = 'Opera'
-    version = ua.substring(verOffset + 6)
+    offSet = verOffset + 6
+    version = ua.substring(offSet)
     if ((verOffset = ua.indexOf('Version')) !== -1) {
-      version = ua.substring(verOffset + 8)
+      offSet = verOffset + 8
+      version = ua.substring(offSet)
     }
   } else if ((verOffset = ua.indexOf('OPR')) !== -1) {
     browser = 'Opera'
-    version = ua.substring(verOffset + 4)
+    offSet = verOffset + 4
+    version = ua.substring(offSet)
   } else if ((verOffset = ua.indexOf('Edge')) !== -1) {
     browser = 'Microsoft Edge'
-    version = ua.substring(verOffset + 5)
+    offSet = verOffset + 5
+    version = ua.substring(offSet)
   } else if ((verOffset = ua.indexOf('MSIE')) !== -1) {
     browser = 'Microsoft Internet Explorer'
     version = ua.substring(verOffset + 5)
   } else if ((verOffset = ua.indexOf('Chrome')) !== -1) {
     browser = 'Chrome'
-    version = ua.substring(verOffset + 7)
+    offSet = verOffset + 7
+    version = ua.substring(offSet)
   } else if ((verOffset = ua.indexOf('Safari')) !== -1) {
     browser = 'Safari'
-    version = ua.substring(verOffset + 7)
+    offSet = verOffset + 7
+    version = ua.substring(offSet)
     if ((verOffset = ua.indexOf('Version')) !== -1) {
-      version = ua.substring(verOffset + 8)
+      offSet = verOffset + 8
+      version = ua.substring(offSet)
     }
   } else if ((verOffset = ua.indexOf('Firefox')) !== -1) {
     browser = 'Firefox'
-    version = ua.substring(verOffset + 8)
+    offSet = verOffset + 8
+    version = ua.substring(offSet)
   } else if (ua.indexOf('Trident/') !== -1) {
     browser = 'Microsoft Internet Explorer'
     version = ua.substring(ua.indexOf('rv:') + 3)
@@ -117,17 +125,8 @@ const getBrowserInfo = () => {
     }
   }
 
-  if ((ix = version.indexOf('')) !== -1) {
-    version = version.substring(0, ix)
-  }
-
-  if ((ix = version.indexOf(' ')) !== -1) {
-    version = version.substring(0, ix)
-  }
-
-  if ((ix = version.indexOf(')')) !== -1) {
-    version = version.substring(0, ix)
-  }
+  version = version.split(' ');
+  version = version[0]
 
   majorVersion = parseInt('' + version, 10)
   if (isNaN(majorVersion)) {
