@@ -34,7 +34,7 @@ const constructURL = () => {
       domainPrefix = 'log-app'
       break
     default:
-      domainPrefix = 'env'
+      domainPrefix = env
   }
   if (domainPrefix) {
     baseURL = `https://${domainPrefix}.astrnt.co`
