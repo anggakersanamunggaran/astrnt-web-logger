@@ -1,6 +1,6 @@
 ## Version
-0.0.4
-
+0.0.5
+-update env can be setted
 ## Description
 Simple web event tracker for astronaut web application
 
