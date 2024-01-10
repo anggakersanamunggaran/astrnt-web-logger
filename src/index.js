@@ -96,7 +96,9 @@ export function initialize(env, params, onError = () => {}, onUnhandledRejection
     'interviewCode': params.interview_code || '',
     'candidate_id': params.candidate_id || 0,
     'job_id': params.job_id || 0,
-    'company_id': params.company_id || 0
+    'company_id': params.company_id || 0,
+    'device_name': params.device_name || '',
+    'token': params.token || ''
   }
 
   localStorage.setItem(logEnv, env)
